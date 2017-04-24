@@ -225,7 +225,7 @@ def main():
     #dirs = [('.//data//DR' , "DR") , ('.//data//DT' , "DT") , ('.//data//L' , "L")]
     #bag = create_bag(dirs , 0)
     #bayes("./data/TEST/WA_Grant_2009-01-06__1248482.txt",bag)
-    intelli_grep("./data/TEST/OR_Lincoln_2008-04-02__08004083.txt")
+    intelli_grep("./data/TEST/WA_Benton_2009-04-01__2009-008709.txt")
 
     #j = 0
 
