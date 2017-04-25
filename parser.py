@@ -242,16 +242,19 @@ def perceptron(dictionary , bag , file_path):
     #   open and preprocess file for testing
     with open(file_path, encoding = 'utf8') as file:
         data = file.read()
-        myfile=words(data)
-
-    print(myfile[0])
+        file_words=words(data)
 
     #shuffle the bag so our training data is random
     random_bag = random.shuffle(bag)
 
-    DT_dict = deepcopy(dictionary)
-    DL_dict = deepcopy(dictionary)
-    L_dict = deepcopy(dictionary)
+
+    for words in file_words[0]:
+        pass
+
+        
+##    DT_dict = deepcopy(dictionary)
+##    DL_dict = deepcopy(dictionary)
+##    L_dict = deepcopy(dictionary)
 
 ##    for doc in random_bag:
 ##        # perceptron for DT
@@ -261,20 +264,18 @@ def perceptron(dictionary , bag , file_path):
         
 
 def main():
-
     dirs = [('.//data//DR' , "DR") , ('.//data//DT' , "DT") , ('.//data//L' , "L")]
     bag = create_bag(dirs , 0)
-##    bayes("./data/TEST/WA_Grant_2009-01-06__1248482.txt",bag)
+    bayes("./data/TEST/WA_Grant_2009-01-07__1248514.txt",bag)
 ##    intelli_grep("./data/TEST/OR_Lincoln_2008-04-02__08004083.txt")
 
     #j = 0
-
-    dic = make_dict(bag)
-
-
-    perceptron(dic , bag , "./data/TEST/OR_Lincoln_2008-04-02__08004083.txt")
+##
+##    dic = make_dict(bag)
+##
+##
+##    perceptron(dic , bag , "./data/TEST/OR_Lincoln_2008-04-02__08004083.txt")
     
-
     #for i in bag[372][0]:
      #   if bag[372][0][i] > 0 and j < 30:
       #      print(i + ": " + str(bag[372][0][i]))
