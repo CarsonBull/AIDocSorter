@@ -2,8 +2,10 @@
 import math
 import os
 import re
-#import nltk
-#from nltk.corpus import stopwords
+import nltk
+from nltk.corpus import stopwords
+import random
+from copy import deepcopy
 
 def create_corpus(path):
     """Creates a dictionary of the txt files in the provided path. The contents
@@ -28,12 +30,17 @@ def words(data):
     word = ""
     nonword = False
 
+    stops = stopwords.words("english")
+
     # This creates a list of stop words that we wont use
     #stops = set(stopwords.words('english'))
 
     # Setting up the data so it is all lower case and has no trailing white space 
     lower_str = data.lower()
     lower_str = lower_str.rstrip()
+    regex = re.compile('[^a-zA-Z1-9 ]')
+
+    lower_str = regex. sub('', lower_str)
 
     # For loop that takes every character and sorts it to where it needs to go. 
     # Builds words and not charwords then add them to the list when if sees white space
@@ -46,7 +53,7 @@ def words(data):
             word = word + x
         else:
             # Checks if we have a word with only alphabetic characters or if it is a nonword. then adds it to the respective list
-            if not nonword and word != "":
+            if not nonword and word != "" and word not in stops:
                 alpha_words.append(word)
             elif word != "":
                 other_words.append(word)
@@ -220,25 +227,59 @@ def intelli_grep(file_path):
         if(drcount>=lcount):
             print("DR")
 
+def make_dict(bag):
+    dictionary = {}
+
+    for item in bag:
+        for word in item[0]:
+            if word not in dictionary:
+                dictionary[word] = 0
+
+    return dictionary
+
+def perceptron(dictionary , bag , file_path):
+
+    #   open and preprocess file for testing
+    with open(file_path, encoding = 'utf8') as file:
+        data = file.read()
+        myfile=words(data)
+
+    print(myfile[0])
+
+    #shuffle the bag so our training data is random
+    random_bag = random.shuffle(bag)
+
+    DT_dict = deepcopy(dictionary)
+    DL_dict = deepcopy(dictionary)
+    L_dict = deepcopy(dictionary)
+
+##    for doc in random_bag:
+##        # perceptron for DT
+##        pass
+##        # perceptron for DL
+##        # perceptron for L
+        
+
 def main():
-##    nltk.download()
-    #dirs = [('.//data//DR' , "DR") , ('.//data//DT' , "DT") , ('.//data//L' , "L")]
-    #bag = create_bag(dirs , 0)
-    #bayes("./data/TEST/WA_Grant_2009-01-06__1248482.txt",bag)
-    intelli_grep("./data/TEST/OR_Lincoln_2008-04-02__08004083.txt")
+
+    dirs = [('.//data//DR' , "DR") , ('.//data//DT' , "DT") , ('.//data//L' , "L")]
+    bag = create_bag(dirs , 0)
+##    bayes("./data/TEST/WA_Grant_2009-01-06__1248482.txt",bag)
+##    intelli_grep("./data/TEST/OR_Lincoln_2008-04-02__08004083.txt")
 
     #j = 0
+
+    dic = make_dict(bag)
+
+
+    perceptron(dic , bag , "./data/TEST/OR_Lincoln_2008-04-02__08004083.txt")
+    
 
     #for i in bag[372][0]:
      #   if bag[372][0][i] > 0 and j < 30:
       #      print(i + ": " + str(bag[372][0][i]))
        #     j = j + 1
-
-
-#Bag[item #]
-    # Slot 0 dictionary
-    # Slot 1 Class
-
+##    print(stopwords.words("english"))
 
     
 
