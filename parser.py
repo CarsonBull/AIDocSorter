@@ -362,12 +362,39 @@ def perceptron(dictionary , bag , file_path):
         
 
 def main():
-    dirs = [('.//data//DR' , "DR") , ('.//data//DT' , "DT") , ('.//data//L' , "L")]
-    bag = create_bag(dirs , 0)
-    bayes("./data/TEST/WA_Grant_2009-01-07__1248514.txt",bag)
+
+    #nltk.download()
+    
+    #bayes("./data/TEST/OR_Deschutes_2008-06-03__2008-023914.txt",bag)
+    #intelli_grep1("./data/TEST/OR_Coos_2008-04-04__08003341.txt")
+    #intelli_grep2("./data/TEST/OR_Coos_2008-04-04__08003341.txt")
+    path="./data/TEST/"
+    file_list = os.listdir(path)
+    if (len(sys.argv) ==2): 
+        if(sys.argv[1]=="a"):
+            for x in file_list:
+                intelli_grep1(path+x)
+        if(sys.argv[1]=="b"):
+            for x in file_list:
+                intelli_grep2(path+x)
+        if(sys.argv[1]=="c"):
+            dirs = [('.//data//DR' , "DR") , ('.//data//DT' , "DT") , ('.//data//L' , "L")]
+            bag = create_bag(dirs , 0)
+            for x in file_list:
+                bayes(path+x,bag)
+    else:
+        print()
+        print("Pass exactly 1 argument with program to select classifier method.") 
+        print()        
+        print("a-intelligrep, b-modified intelligrep, c-naive bayes")
+        print()
+    
+##    dirs = [('.//data//DR' , "DR") , ('.//data//DT' , "DT") , ('.//data//L' , "L")]
+##    bag = create_bag(dirs , 0)
+##    bayes("./data/TEST/WA_Grant_2009-01-07__1248514.txt",bag)
 ##    intelli_grep("./data/TEST/OR_Lincoln_2008-04-02__08004083.txt")
 
-    #j = 0
+##    j = 0
 ##
 ##    dic = make_dict(bag)
 ##
