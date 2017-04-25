@@ -30,6 +30,52 @@ def words(data):
     word = ""
     nonword = False
 
+    # This creates a list of stop words that we wont use
+    #stops = set(stopwords.words('english'))
+
+    # Setting up the data so it is all lower case and has no trailing white space 
+    lower_str = data.lower()
+    lower_str = lower_str.rstrip()
+    regex = re.compile('[^a-zA-Z1-9 ]')
+
+    lower_str = regex. sub('', lower_str)
+
+    # For loop that takes every character and sorts it to where it needs to go. 
+    # Builds words and not charwords then add them to the list when if sees white space
+    for x in lower_str:
+        if x.isalpha():
+##            if x not in stops:   probably create a second words function that takes out stop words for a modified bayes.
+            word = word + x
+        elif not x.isspace():
+            nonword = True
+            word = word + x
+        else:
+            # Checks if we have a word with only alphabetic characters or if it is a nonword. then adds it to the respective list
+            if not nonword and word != "":
+                alpha_words.append(word)
+            elif word != "":
+                other_words.append(word)
+            word = ""
+            nonword = False
+
+    # Adds the final words and characters that were collected in the for loop    
+    if not nonword and word != "":
+        alpha_words.append(word)
+    elif word != "":
+        other_words.append(word)     
+
+    
+    return (alpha_words , other_words)
+
+def words_no_stopwords(data):
+    """ This function takes a string then breakes it down into a two tuple. the first element is a list of the
+    words that it finds in the string and the second is a list of the non char words also split by whitespace"""
+    
+    alpha_words = []
+    other_words = []
+    word = ""
+    nonword = False
+
     stops = stopwords.words("english")
 
     # This creates a list of stop words that we wont use
@@ -129,7 +175,7 @@ def word_frequencies_file(file_name):
 
 
 def bayes(file_path,bag):
-    #still working on, currently each class has same word counts for everything for some reason. 
+    #currently uses all words as feature vector, assignment wants top 20 words from each class (frequency)
     
     lprob=math.log(1.0/3.0)
     dtprob=lprob
@@ -139,6 +185,7 @@ def bayes(file_path,bag):
     with open(file_path, encoding = 'utf8') as file:
         data = file.read()
         myfile=words(data)
+        
 
 
    
@@ -148,7 +195,7 @@ def bayes(file_path,bag):
         drcount=0
 
 
-# count number of each document in bag    255 of each class in bag 22914 unique words, 6,200,000 roughly words per class
+# count number of each document in bag  255 of each class in bag 22914 unique words, roughly words per class
         for item in bag:
 
             if(item[1]=="L"):
@@ -164,24 +211,25 @@ def bayes(file_path,bag):
                     drcount+=item[0][i]
 
         #here we use sum of logs instead of product of small reals
-        lprob+=math.log(((1.0+lcount)/52425.0+22914.0))     # 52425
+        lprob+=math.log(((1.0+lcount)/52425.0+22914.0))     # 52425   these are total word counts for each class
         dtprob+=math.log(((1.0+dtcount)/1443244.0+22914.0))   # 1443244
         drprob+=math.log(((1.0+drcount)/82499.0+22914.0))   # 82499
 
+    filename=file_path.split('/')
     if(lprob>dtprob):
         if(lprob>drprob):
-            print("l")
+            print(filename[len(filename)-1]+": l")
     if(drprob>dtprob):
         if(drprob>=lprob):
-            print("dr")
-    else:
-        print("dt")
+            print(filename[len(filename)-1]+": dr")
+    if(dtprob>drprob):
+        if(dtprob>lprob):
+            print(filename[len(filename)-1]+": dt")
    
 
+def intelli_grep1(file_path):  #original intelligrep function
 
-def intelli_grep(file_path):
-
-
+    filename=file_path.split('/')
     time=0
     dtcount=0
     drcount=0
@@ -216,16 +264,66 @@ def intelli_grep(file_path):
         if (time>0):        
             time-=1
 
-    print("DT: "+ str(dtcount)+" DR: "+str(drcount)+" L: "+str(lcount))
+    #print("DT: "+ str(dtcount)+" DR: "+str(drcount)+" L: "+str(lcount)) #word counts for each class
     if(lcount>drcount):
         if(lcount>dtcount):
-            print("L")
+            print(filename[len(filename)-1]+": L")
     if(dtcount>drcount):
         if(dtcount>lcount):
-            print("DT")
+            print(filename[len(filename)-1]+": DT")
     if(drcount>=dtcount):
         if(drcount>=lcount):
-            print("DR")
+            print(filename[len(filename)-1]+": DR")
+
+
+
+def intelli_grep2(file_path): #modified intelligrep with pattern matching and weighted word counts
+
+    filename=file_path.split('/')
+    time=0
+    dtcount=0
+    drcount=0
+    lcount=0
+    flag1=False  #flags used to check consecutive words
+    flag2=False
+
+
+    with open(file_path, encoding = 'utf8') as file:
+        data = file.read()
+        myfile=words(data)
+
+
+    for i in myfile[0]:
+        if (i=="deed"):
+            flag1=True
+            time+=1
+        if (i=="of" and flag1):
+            flag2=True
+            time+=1
+        if (i=="trust" and flag2):
+            dtcount+=1
+        if (re.match("recon",i) and flag2):
+            drcount+=1
+        if(i=="lien"):
+            lcount+=1
+
+        
+        if (time == 0):
+            flag1=False
+            flag2=False
+        if (time>0):        
+            time-=1
+
+    #print("DT: "+ str(dtcount)+" DR: "+str(drcount)+" L: "+str(lcount)) #word counts for each class
+    if(lcount/2>5*drcount):
+        if(lcount/2>dtcount):
+            print(filename[len(filename)-1]+": L")
+    if(dtcount>5*drcount):
+        if(dtcount>lcount/2):
+            print(filename[len(filename)-1]+": DT")
+    if(5*drcount>=dtcount):
+        if(5*drcount>=lcount/2):
+            print(filename[len(filename)-1]+": DR")
 
 def make_dict(bag):
     dictionary = {}
