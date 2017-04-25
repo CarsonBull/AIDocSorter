@@ -8,6 +8,8 @@ from nltk.corpus import stopwords
 import random
 from copy import deepcopy
 
+
+
 def create_corpus(path):
     """Creates a dictionary of the txt files in the provided path. The contents
     of files will be mapped to the file name"""
@@ -219,14 +221,16 @@ def bayes(file_path,bag):
     filename=file_path.split('/')
     if(lprob>dtprob):
         if(lprob>drprob):
-            print(filename[len(filename)-1]+": l")
+            return((filename[len(filename)-1],"L"))            
+            #print(filename[len(filename)-1]+": l")
     if(drprob>dtprob):
         if(drprob>=lprob):
-            print(filename[len(filename)-1]+": dr")
+            #print(filename[len(filename)-1]+": dr")
+            return((filename[len(filename)-1],"DR"))
     if(dtprob>drprob):
         if(dtprob>lprob):
-            print(filename[len(filename)-1]+": dt")
-   
+            #print(filename[len(filename)-1]+": dt")
+            return((filename[len(filename)-1],"DT"))
 
 def intelli_grep1(file_path):  #original intelligrep function
 
@@ -268,13 +272,16 @@ def intelli_grep1(file_path):  #original intelligrep function
     #print("DT: "+ str(dtcount)+" DR: "+str(drcount)+" L: "+str(lcount)) #word counts for each class
     if(lcount>drcount):
         if(lcount>dtcount):
-            print(filename[len(filename)-1]+": L")
+            #print(filename[len(filename)-1]+": L")
+            return((filename[len(filename)-1],"L"))
     if(dtcount>drcount):
         if(dtcount>lcount):
-            print(filename[len(filename)-1]+": DT")
+            #print(filename[len(filename)-1]+": DT")
+            return((filename[len(filename)-1],"DT"))
     if(drcount>=dtcount):
         if(drcount>=lcount):
-            print(filename[len(filename)-1]+": DR")
+            #print(filename[len(filename)-1]+": DR")
+            return((filename[len(filename)-1],"DR"))
 
 
 
@@ -318,13 +325,16 @@ def intelli_grep2(file_path): #modified intelligrep with pattern matching and we
     #print("DT: "+ str(dtcount)+" DR: "+str(drcount)+" L: "+str(lcount)) #word counts for each class
     if(lcount/2>5*drcount):
         if(lcount/2>dtcount):
-            print(filename[len(filename)-1]+": L")
+            #print(filename[len(filename)-1]+": L")
+            return((filename[len(filename)-1],"L"))
     if(dtcount>5*drcount):
         if(dtcount>lcount/2):
-            print(filename[len(filename)-1]+": DT")
+            #print(filename[len(filename)-1]+": DT")
+            return((filename[len(filename)-1],"DT"))
     if(5*drcount>=dtcount):
         if(5*drcount>=lcount/2):
-            print(filename[len(filename)-1]+": DR")
+            #print(filename[len(filename)-1]+": DR")
+            return((filename[len(filename)-1],"DR"))
 
 def make_dict(bag):
     dictionary = {}
@@ -363,7 +373,7 @@ def perceptron(dictionary , bag , file_path):
         
 
 def main():
-
+    results=[]
     #nltk.download()
     
     #bayes("./data/TEST/OR_Deschutes_2008-06-03__2008-023914.txt",bag)
@@ -374,22 +384,21 @@ def main():
     if (len(sys.argv) ==2): 
         if(sys.argv[1]=="a"):
             for x in file_list:
-                intelli_grep1(path+x)
+                print(intelli_grep1(path+x))
         if(sys.argv[1]=="b"):
             for x in file_list:
-                intelli_grep2(path+x)
+                print(intelli_grep2(path+x))
         if(sys.argv[1]=="c"):
             dirs = [('.//data//DR' , "DR") , ('.//data//DT' , "DT") , ('.//data//L' , "L")]
             bag = create_bag(dirs , 0)
             for x in file_list:
-                bayes(path+x,bag)
+                print(bayes(path+x,bag))
     else:
         print()
         print("Pass exactly 1 argument with program to select classifier method.") 
         print()        
         print("a-intelligrep, b-modified intelligrep, c-naive bayes")
         print()
-    
 ##    dirs = [('.//data//DR' , "DR") , ('.//data//DT' , "DT") , ('.//data//L' , "L")]
 ##    bag = create_bag(dirs , 0)
 ##    bayes("./data/TEST/WA_Grant_2009-01-07__1248514.txt",bag)
