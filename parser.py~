@@ -384,21 +384,25 @@ def main():
     if (len(sys.argv) ==2): 
         if(sys.argv[1]=="a"):
             for x in file_list:
-                intelli_grep1(path+x)
+                print(intelli_grep1(path+x))
         if(sys.argv[1]=="b"):
             for x in file_list:
-                print(intelli_grep2(path+x))
+                results.append(intelli_grep2(path+x))                
+                #print(intelli_grep2(path+x))
         if(sys.argv[1]=="c"):
             dirs = [('.//data//DR' , "DR") , ('.//data//DT' , "DT") , ('.//data//L' , "L")]
             bag = create_bag(dirs , 0)
             for x in file_list:
-                bayes(path+x,bag)
+                print(bayes(path+x,bag))
     else:
         print()
         print("Pass exactly 1 argument with program to select classifier method.") 
         print()        
         print("a-intelligrep, b-modified intelligrep, c-naive bayes")
         print()
+
+    results.sort(key=lambda t: t[1])
+    print(results)
 ##    dirs = [('.//data//DR' , "DR") , ('.//data//DT' , "DT") , ('.//data//L' , "L")]
 ##    bag = create_bag(dirs , 0)
 ##    bayes("./data/TEST/WA_Grant_2009-01-07__1248514.txt",bag)

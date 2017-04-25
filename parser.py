@@ -387,6 +387,7 @@ def main():
                 print(intelli_grep1(path+x))
         if(sys.argv[1]=="b"):
             for x in file_list:
+                #results.append(intelli_grep2(path+x))                
                 print(intelli_grep2(path+x))
         if(sys.argv[1]=="c"):
             dirs = [('.//data//DR' , "DR") , ('.//data//DT' , "DT") , ('.//data//L' , "L")]
@@ -399,6 +400,7 @@ def main():
         print()        
         print("a-intelligrep, b-modified intelligrep, c-naive bayes")
         print()
+
 ##    dirs = [('.//data//DR' , "DR") , ('.//data//DT' , "DT") , ('.//data//L' , "L")]
 ##    bag = create_bag(dirs , 0)
 ##    bayes("./data/TEST/WA_Grant_2009-01-07__1248514.txt",bag)
