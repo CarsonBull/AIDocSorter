@@ -132,6 +132,19 @@ def word_frequencies(corpus):
 
     return lookup_dict
 
+def word_frequencies_20(word_dict):
+
+    word_list = []
+    
+    for word in word_dict:
+        word_list.append((word_dict[word] , word))
+
+    word_list.sort(reverse=True)
+
+    for i in range(20):
+        print(word_list[i])
+
+
 def create_bag(directory_list , smoothing_num):
 
     bag_of_words = []
@@ -161,7 +174,7 @@ def word_frequencies_file(file_name):
 
     lookup_dict = {}
 
-    alphabetic_words_list = words(file_name)[0]
+    alphabetic_words_list = words_no_stopwords(file_name)[0]
     for word in alphabetic_words_list:
         if word in lookup_dict:
             lookup_dict[word] += 1
@@ -345,6 +358,7 @@ def make_dict(bag):
                 dictionary[word] = 0
 
     return dictionary
+        
 
 def perceptron(dictionary , bag , file_path):
 
@@ -354,8 +368,19 @@ def perceptron(dictionary , bag , file_path):
         file_words=words(data)
 
     #shuffle the bag so our training data is random
-    random_bag = random.shuffle(bag)
+##    random_bag = random.shuffle(bag)
 
+    DT_dict = {}
+    DR_dict = {}
+    L_dict = {}
+
+    for item in bag:
+        if item[1] == "DT":
+           sorted_dict = sort 
+        elif item[1] == "DR":
+            pass
+        else:
+            pass
 
     for words in file_words[0]:
         pass
@@ -379,7 +404,7 @@ def main():
     #bayes("./data/TEST/OR_Deschutes_2008-06-03__2008-023914.txt",bag)
     #intelli_grep1("./data/TEST/OR_Coos_2008-04-04__08003341.txt")
     #intelli_grep2("./data/TEST/OR_Coos_2008-04-04__08003341.txt")
-    path="./data/TEST/"
+    """path="./data/TEST/"
     file_list = os.listdir(path)
     if (len(sys.argv) ==2): 
         if(sys.argv[1]=="a"):
@@ -399,15 +424,16 @@ def main():
         print("Pass exactly 1 argument with program to select classifier method.") 
         print()        
         print("a-intelligrep, b-modified intelligrep, c-naive bayes")
-        print()
+        print()"""
 
-##    dirs = [('.//data//DR' , "DR") , ('.//data//DT' , "DT") , ('.//data//L' , "L")]
-##    bag = create_bag(dirs , 0)
+    dirs = [('.//data//DR' , "DR") , ('.//data//DT' , "DT") , ('.//data//L' , "L")]
+    bag = create_bag(dirs , 0)
+    word_frequencies_20(bag[21][0])
+##    word_frequencies_20(bag[21])
 ##    bayes("./data/TEST/WA_Grant_2009-01-07__1248514.txt",bag)
 ##    intelli_grep("./data/TEST/OR_Lincoln_2008-04-02__08004083.txt")
 
-##    j = 0
-##
+    
 ##    dic = make_dict(bag)
 ##
 ##
