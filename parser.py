@@ -132,7 +132,7 @@ def word_frequencies(corpus):
 
     return lookup_dict
 
-def word_frequencies_20(word_dict):
+def word_frequencies_x(word_dict , amount):
 
     word_list = []
     return_list = []
@@ -142,7 +142,7 @@ def word_frequencies_20(word_dict):
 
     word_list.sort(reverse=True)
 
-    return_list = word_list[:20]
+    return_list = word_list[:amount]
 
 ##    for i in range(20):
 ##        return_list.append(word_list[i])
@@ -382,7 +382,7 @@ def perceptron(dictionary , bag , file_path):
 
     for item in bag:
         if item[1] == "DT":
-            sorted_list = word_frequencies_20(item[0])
+            sorted_list = word_frequencies_x(item[0] , 20)
             for word_tuple in sorted_list:
                 DT_count += word_tuple[0]
                 if word_tuple[1] not in DT_dict:
@@ -390,7 +390,7 @@ def perceptron(dictionary , bag , file_path):
                 else:
                     DT_dict[word_tuple[1]] += word_tuple[0]
         elif item[1] == "DR":
-            sorted_list = word_frequencies_20(item[0])
+            sorted_list = word_frequencies_x(item[0] , 20)
             for word_tuple in sorted_list:
                 DR_count += word_tuple[0]
                 if word_tuple[1] not in DR_dict:
@@ -398,7 +398,7 @@ def perceptron(dictionary , bag , file_path):
                 else:
                     DR_dict[word_tuple[1]] += word_tuple[0]
         else:
-            sorted_list = word_frequencies_20(item[0])
+            sorted_list = word_frequencies_x(item[0] , 20)
             for word_tuple in sorted_list:
                 L_count += word_tuple[0]
                 if word_tuple[1] not in L_dict:
@@ -407,7 +407,7 @@ def perceptron(dictionary , bag , file_path):
                     L_dict[word_tuple[1]] += word_tuple[0]
             
 
-    print(len(DT_dict))
+    print(word_frequencies_x(L_dict , 60))
 
 def check_result(file_path , file_name , result):
 
