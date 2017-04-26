@@ -135,14 +135,19 @@ def word_frequencies(corpus):
 def word_frequencies_20(word_dict):
 
     word_list = []
+    return_list = []
     
     for word in word_dict:
         word_list.append((word_dict[word] , word))
 
     word_list.sort(reverse=True)
 
-    for i in range(20):
-        print(word_list[i])
+    return_list = word_list[:20]
+
+##    for i in range(20):
+##        return_list.append(word_list[i])
+
+    return return_list
 
 
 def create_bag(directory_list , smoothing_num):
@@ -365,36 +370,44 @@ def perceptron(dictionary , bag , file_path):
     #   open and preprocess file for testing
     with open(file_path, encoding = 'utf8') as file:
         data = file.read()
-        file_words=words(data)
-
-    #shuffle the bag so our training data is random
-##    random_bag = random.shuffle(bag)
+        file_words = words_no_stopwords(data)
 
     DT_dict = {}
     DR_dict = {}
     L_dict = {}
 
+    DT_count = 0;
+    DR_count = 0;
+    L_count = 0;
+
     for item in bag:
         if item[1] == "DT":
-           sorted_dict = sort 
+            sorted_list = word_frequencies_20(item[0])
+            for word_tuple in sorted_list:
+                DT_count += word_tuple[0]
+                if word_tuple[1] not in DT_dict:
+                    DT_dict[word_tuple[1]] = word_tuple[0]
+                else:
+                    DT_dict[word_tuple[1]] += word_tuple[0]
         elif item[1] == "DR":
-            pass
+            sorted_list = word_frequencies_20(item[0])
+            for word_tuple in sorted_list:
+                DR_count += word_tuple[0]
+                if word_tuple[1] not in DR_dict:
+                    DR_dict[word_tuple[1]] = word_tuple[0]
+                else:
+                    DR_dict[word_tuple[1]] += word_tuple[0]
         else:
-            pass
+            sorted_list = word_frequencies_20(item[0])
+            for word_tuple in sorted_list:
+                L_count += word_tuple[0]
+                if word_tuple[1] not in L_dict:
+                    L_dict[word_tuple[1]] = word_tuple[0]
+                else:
+                    L_dict[word_tuple[1]] += word_tuple[0]
+            
 
-    for words in file_words[0]:
-        pass
-
-        
-##    DT_dict = deepcopy(dictionary)
-##    DL_dict = deepcopy(dictionary)
-##    L_dict = deepcopy(dictionary)
-
-##    for doc in random_bag:
-##        # perceptron for DT
-##        pass
-##        # perceptron for DL
-##        # perceptron for L
+    print(len(DT_dict))
 
 def check_result(file_path , file_name , result):
 
@@ -409,55 +422,52 @@ def check_result(file_path , file_name , result):
         return True
     else:
         return False
+
+
         
 
 def main():
-    results=[]
+
     #nltk.download()
     
     #bayes("./data/TEST/OR_Deschutes_2008-06-03__2008-023914.txt",bag)
     #intelli_grep1("./data/TEST/OR_Coos_2008-04-04__08003341.txt")
     #intelli_grep2("./data/TEST/OR_Coos_2008-04-04__08003341.txt")
-    """path="./data/TEST/"
-    file_list = os.listdir(path)
-    if (len(sys.argv) ==2): 
-        if(sys.argv[1]=="a"):
-            for x in file_list:
-                print(intelli_grep1(path+x))
-        if(sys.argv[1]=="b"):
-            for x in file_list:
-                #results.append(intelli_grep2(path+x))                
-                print(intelli_grep2(path+x))
-        if(sys.argv[1]=="c"):
-            dirs = [('.//data//DR' , "DR") , ('.//data//DT' , "DT") , ('.//data//L' , "L")]
-            bag = create_bag(dirs , 0)
-            for x in file_list:
-                print(bayes(path+x,bag))
-    else:
-        print()
-        print("Pass exactly 1 argument with program to select classifier method.") 
-        print()        
-        print("a-intelligrep, b-modified intelligrep, c-naive bayes")
-        print()"""
-
+##    path="./data/TEST/"
+##    file_list = os.listdir(path)
+##    if (len(sys.argv) ==2): 
+##        if(sys.argv[1]=="a"):
+##            for x in file_list:
+##                intelli_grep1(path+x)
+##        if(sys.argv[1]=="b"):
+##            for x in file_list:
+##                intelli_grep2(path+x)
+##        if(sys.argv[1]=="c"):
+##            dirs = [('.//data//DR' , "DR") , ('.//data//DT' , "DT") , ('.//data//L' , "L")]
+##            bag = create_bag(dirs , 0)
+##            for x in file_list:
+##                bayes(path+x,bag)
+##    else:
+##        print()
+##        print("Pass exactly 1 argument with program to select classifier method.") 
+##        print()        
+##        print("a-intelligrep, b-modified intelligrep, c-naive bayes")
+##        print()
+    
     dirs = [('.//data//DR' , "DR") , ('.//data//DT' , "DT") , ('.//data//L' , "L")]
     bag = create_bag(dirs , 0)
-    word_frequencies_20(bag[21][0])
-##    word_frequencies_20(bag[21])
 ##    bayes("./data/TEST/WA_Grant_2009-01-07__1248514.txt",bag)
 ##    intelli_grep("./data/TEST/OR_Lincoln_2008-04-02__08004083.txt")
 
-    
-##    dic = make_dict(bag)
+##    j = 0
+##
+    dic = make_dict(bag)
 ##
 ##
-##    perceptron(dic , bag , "./data/TEST/OR_Lincoln_2008-04-02__08004083.txt")
-    
-    #for i in bag[372][0]:
-     #   if bag[372][0][i] > 0 and j < 30:
-      #      print(i + ": " + str(bag[372][0][i]))
-       #     j = j + 1
-##    print(stopwords.words("english"))
+    perceptron(dic , bag , "./data/TEST/OR_Lincoln_2008-04-02__08004083.txt")
+
+
+##    print(check_result(".\\data\\test-results.txt" , 'OR_Coos_2008-04-07__08003475.txt' , 'L'))
 
     
 
