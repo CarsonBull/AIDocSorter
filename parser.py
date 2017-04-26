@@ -395,6 +395,20 @@ def perceptron(dictionary , bag , file_path):
 ##        pass
 ##        # perceptron for DL
 ##        # perceptron for L
+
+def check_result(file_path , file_name , result):
+
+    with open(file_path, encoding = 'utf8') as file:
+        data = file.read()
+
+    match_string = file_name + ',(.*)'
+
+    match = re.findall(match_string , data)
+
+    if(len(match) == 1 and match[0] == result):
+        return True
+    else:
+        return False
         
 
 def main():
