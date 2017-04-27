@@ -250,6 +250,65 @@ def bayes(file_path,bag):
             #print(filename[len(filename)-1]+": dt")
             return((filename[len(filename)-1],"DT"))
 
+
+def bayes1(file_path,bag):
+    #currently uses all words as feature vector, assignment wants top 20 words from each class (frequency)
+    
+    lprob=math.log(1.0/3.0)
+    dtprob=lprob
+    drprob=lprob
+    
+    #   open and preprocess file for testing
+    with open(file_path, encoding = 'utf8') as file:
+        data = file.read()
+        myfile=words(data)
+        
+
+
+   
+    for i in myfile[0]:
+        lcount=0
+        dtcount=0
+        drcount=0
+
+
+# count number of each document in bag  255 of each class in bag 22914 unique words, roughly words per class
+        for item in bag:
+
+            if(item[1]=="L"): #sort document by class, then check if the word exists in the document
+                if i in item[0]:
+                    lcount+=1
+
+            if(item[1]=="DT"):
+                if i in item[0]:
+                    dtcount+=1
+
+            if(item[1]=="DR"):
+                if i in item[0]:
+                    drcount+=1
+
+        #here we use sum of logs instead of product of small reals
+        lprob+=math.log(((1.0+lcount)/52425.0+22914.0))     # 52425   these are total word counts for each class
+        dtprob+=math.log(((1.0+dtcount)/1443244.0+22914.0))   # 1443244
+        drprob+=math.log(((1.0+drcount)/82499.0+22914.0))   # 82499
+
+    filename=file_path.split('/')
+    if(lprob>=dtprob):
+        if(lprob>=drprob):
+            return((filename[len(filename)-1],"L"))            
+            #print(filename[len(filename)-1]+": l") 
+    if(drprob>=dtprob):
+        if(drprob>=lprob):
+            #print(filename[len(filename)-1]+": dr")
+            return((filename[len(filename)-1],"DR"))
+    if(dtprob>=drprob):
+        if(dtprob>=lprob):
+            #print(filename[len(filename)-1]+": dt")
+            return((filename[len(filename)-1],"DT"))
+
+
+
+
 def intelli_grep1(file_path):  #original intelligrep function
 
     filename=file_path.split('/')
@@ -545,26 +604,50 @@ def main():
     #bayes("./data/TEST/OR_Deschutes_2008-06-03__2008-023914.txt",bag)
     #intelli_grep1("./data/TEST/OR_Coos_2008-04-04__08003341.txt")
     #intelli_grep2("./data/TEST/OR_Coos_2008-04-04__08003341.txt")
-##    path="./data/TEST/"
-##    file_list = os.listdir(path)
-##    if (len(sys.argv) ==2): 
-##        if(sys.argv[1]=="a"):
-##            for x in file_list:
-##                intelli_grep1(path+x)
-##        if(sys.argv[1]=="b"):
-##            for x in file_list:
-##                intelli_grep2(path+x)
-##        if(sys.argv[1]=="c"):
-##            dirs = [('.//data//DR' , "DR") , ('.//data//DT' , "DT") , ('.//data//L' , "L")]
-##            bag = create_bag(dirs , 0)
-##            for x in file_list:
-##                bayes(path+x,bag)
-##    else:
-##        print()
-##        print("Pass exactly 1 argument with program to select classifier method.") 
-##        print()        
-##        print("a-intelligrep, b-modified intelligrep, c-naive bayes")
-##        print()
+    path="./data/TEST/"
+    file_list = os.listdir(path)
+    count=0
+    if (len(sys.argv) ==2): 
+        if(sys.argv[1]=="a"):  #currently guesses 104 files correctly of 225. 46.22%
+            for x in file_list:
+                results=intelli_grep1(path+x)
+                if(check_result("./data/test-results.txt",results[0],results[1])):
+                    count+=1
+
+
+        if(sys.argv[1]=="b"):  #guesses 149 files correctly of 225. 66.22% 
+            for x in file_list:
+                results=intelli_grep2(path+x)
+                if(check_result("./data/test-results.txt",results[0],results[1])):
+                    count+=1
+
+
+        if(sys.argv[1]=="c"):  #guesses 194 files correctly of 225. 86.22% 
+            dirs = [('.//data//DR' , "DR") , ('.//data//DT' , "DT") , ('.//data//L' , "L")]
+            bag = create_bag(dirs , 0)
+            for x in file_list:
+                results=bayes(path+x,bag)
+                if(check_result("./data/test-results.txt",results[0],results[1])):
+                    count+=1
+
+        if(sys.argv[1]=="d"):  #guesses  files correctly of 225. 
+            dirs = [('.//data//DR' , "DR") , ('.//data//DT' , "DT") , ('.//data//L' , "L")]
+            bag = create_bag(dirs , 0)
+            for x in file_list:
+                results=bayes1(path+x,bag)
+                if(check_result("./data/test-results.txt",results[0],results[1])):
+                    count+=1
+
+
+        
+
+
+    else:
+        print()
+        print("Pass exactly 1 argument with program to select classifier method.") 
+        print()        
+        print("a-intelligrep, b-modified intelligrep, c-naive bayes, -d binary bayes")
+        print()
     
 ##    bayes("./data/TEST/WA_Grant_2009-01-07__1248514.txt",bag)
 ##    intelli_grep("./data/TEST/OR_Lincoln_2008-04-02__08004083.txt")
@@ -572,11 +655,11 @@ def main():
 ##    j = 0
 
 
-    per = Per()
+#    per = Per()
 
-    per.train()
+#    per.train()
 
-    per.perceptron("./data/TEST/WA_Benton_2009-04-02__2009-008784.txt")
+#    per.perceptron("./data/TEST/WA_Benton_2009-04-02__2009-008784.txt")
 
 
 ##    print(check_result(".\\data\\test-results.txt" , 'OR_Coos_2008-04-07__08003475.txt' , 'L'))
