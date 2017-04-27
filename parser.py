@@ -364,50 +364,162 @@ def make_dict(bag):
 
     return dictionary
         
+class Per:
 
-def perceptron(dictionary , bag , file_path):
+    def __init__(self):
+        dirs = [('.//data//DR' , "DR") , ('.//data//DT' , "DT") , ('.//data//L' , "L")]
+        self.bag = create_bag(dirs , 0)
 
-    #   open and preprocess file for testing
-    with open(file_path, encoding = 'utf8') as file:
-        data = file.read()
-        file_words = words_no_stopwords(data)
+        self.DT_dict = {}
+        self.DR_dict = {}
+        self.L_dict = {}
 
-    DT_dict = {}
-    DR_dict = {}
-    L_dict = {}
+        self.DT_ratio = {}
+        self.DR_ratio = {}
+        self.L_ratio = {}
 
-    DT_count = 0;
-    DR_count = 0;
-    L_count = 0;
+        self.DT_count = 0;
+        self.DR_count = 0;
+        self.L_count = 0;
 
-    for item in bag:
-        if item[1] == "DT":
-            sorted_list = word_frequencies_x(item[0] , 20)
-            for word_tuple in sorted_list:
-                DT_count += word_tuple[0]
-                if word_tuple[1] not in DT_dict:
-                    DT_dict[word_tuple[1]] = word_tuple[0]
+        self.DT_bias = .5
+        self.DR_bias = .5
+        self.L_bias = .5
+
+        self.alpha = .1
+
+        self.decay = .99
+
+        for item in self.bag:
+            if item[1] == "DT":
+                sorted_list = word_frequencies_x(item[0] , 20)
+                for word_tuple in sorted_list:
+                    self.DT_count += word_tuple[0]
+                    if word_tuple[1] not in self.DT_dict:
+                        self.DT_dict[word_tuple[1]] = word_tuple[0]
+                    else:
+                        self.DT_dict[word_tuple[1]] += word_tuple[0]
+            elif item[1] == "DR":
+                sorted_list = word_frequencies_x(item[0] , 20)
+                for word_tuple in sorted_list:
+                    self.DR_count += word_tuple[0]
+                    if word_tuple[1] not in self.DR_dict:
+                        self.DR_dict[word_tuple[1]] = word_tuple[0]
+                    else:
+                        self.DR_dict[word_tuple[1]] += word_tuple[0]
+            else:
+                sorted_list = word_frequencies_x(item[0] , 20)
+                for word_tuple in sorted_list:
+                    self.L_count += word_tuple[0]
+                    if word_tuple[1] not in self.L_dict:
+                        self.L_dict[word_tuple[1]] = word_tuple[0]
+                    else:
+                        self.L_dict[word_tuple[1]] += word_tuple[0]
+
+        for word in self.DT_dict:
+            self.DT_ratio[word] = self.DT_dict[word]/self.DT_count
+
+        for word in self.DR_dict:
+            self.DR_ratio[word] = self.DR_dict[word]/self.DR_count
+
+        print(self.L_count)
+
+        for word in self.L_dict:
+            self.L_ratio[word] = self.L_dict[word]/self.L_count
+
+    def train(self):
+
+        random_bag = deepcopy(self.bag)
+
+        random.shuffle(random_bag)
+        
+        for doc in random_bag:
+            DT_score = self.DT_bias;
+            DR_score = self.DR_bias;
+            L_score = self.L_bias;
+            for word in doc[0]:
+                if word in self.DT_ratio:
+                    DT_score += self.DT_ratio[word]*doc[0][word]
+                if word in self.DR_ratio:
+                    DR_score += self.DR_ratio[word]*doc[0][word]
+                if word in self.L_ratio:
+                    L_score += self.L_ratio[word]*doc[0][word]
+
+            DR_error = 0;
+            DT_error = 0;
+            L_error = 0;
+
+            if doc[1] == "DR":
+                if DR_score >= 0:
+                    DR_error = 0
                 else:
-                    DT_dict[word_tuple[1]] += word_tuple[0]
-        elif item[1] == "DR":
-            sorted_list = word_frequencies_x(item[0] , 20)
-            for word_tuple in sorted_list:
-                DR_count += word_tuple[0]
-                if word_tuple[1] not in DR_dict:
-                    DR_dict[word_tuple[1]] = word_tuple[0]
+                    DR_error = -1
+            else:
+                if DR_score >= 0:
+                    DR_error = -1
                 else:
-                    DR_dict[word_tuple[1]] += word_tuple[0]
-        else:
-            sorted_list = word_frequencies_x(item[0] , 20)
-            for word_tuple in sorted_list:
-                L_count += word_tuple[0]
-                if word_tuple[1] not in L_dict:
-                    L_dict[word_tuple[1]] = word_tuple[0]
-                else:
-                    L_dict[word_tuple[1]] += word_tuple[0]
-            
+                    DR_error = 0
 
-    print(word_frequencies_x(L_dict , 60))
+            if doc[1] == "DT":
+                if DT_score >= 0:
+                    DT_error = 0
+                else:
+                    DT_error = -1
+            else:
+                if DT_score >= 0:
+                    DT_error = -1
+                else:
+                    DT_error = 0
+
+            if doc[1] == "L":
+                if L_score >= 0:
+                    L_error = 0
+                else:
+                    L_error = -1
+            else:
+                if L_score >= 0:
+                    L_error = -1
+                else:
+                    L_error = 0
+
+            for word in doc[0]:
+                if word in self.DT_ratio:
+                    self.DT_ratio[word] = self.DT_ratio[word] + (self.alpha*DT_error)
+                    self.DT_bias = self.DT_bias + (self.alpha*DT_error)
+                if word in self.DR_ratio:
+                    self.DR_ratio[word] = self.DR_ratio[word] + (self.alpha*DR_error)
+                    self.DR_bias = self.DR_bias + (self.alpha*DR_error)
+                if word in self.L_ratio:
+                    self.L_ratio[word] = self.L_ratio[word] + (self.alpha*L_error)
+                    self.L_bias = self.L_bias + (self.alpha*L_error)
+
+            self.alpha = self.alpha * self.decay
+                   
+                
+
+    def perceptron(self , file_path):
+
+        #   open and preprocess file for testing
+        file_words = word_frequencies_file(file_path)
+
+        DT_score = self.DT_bias;
+        DR_score = self.DR_bias;
+        L_score = self.L_bias;
+        for word in file_words:
+            print(type(file_words[0]))
+            if word in self.DT_ratio:
+                DT_score += self.DT_ratio[word]*file_words[word]
+            if word in self.DR_ratio:
+                DR_score += self.DR_ratio[word]*file_words[word]
+            if word in self.L_ratio:
+                L_score += self.L_ratio[word]*file_words[word]
+
+        print("DT_score: " + str(DT_score))
+        print("DR_score: " + str(DR_score))
+        print("L_score: " + str(L_score))
+
+        
+        
 
 def check_result(file_path , file_name , result):
 
@@ -454,17 +566,17 @@ def main():
 ##        print("a-intelligrep, b-modified intelligrep, c-naive bayes")
 ##        print()
     
-    dirs = [('.//data//DR' , "DR") , ('.//data//DT' , "DT") , ('.//data//L' , "L")]
-    bag = create_bag(dirs , 0)
 ##    bayes("./data/TEST/WA_Grant_2009-01-07__1248514.txt",bag)
 ##    intelli_grep("./data/TEST/OR_Lincoln_2008-04-02__08004083.txt")
 
 ##    j = 0
-##
-    dic = make_dict(bag)
-##
-##
-    perceptron(dic , bag , "./data/TEST/OR_Lincoln_2008-04-02__08004083.txt")
+
+
+    per = Per()
+
+    per.train()
+
+    per.perceptron("./data/TEST/WA_Benton_2009-04-02__2009-008784.txt")
 
 
 ##    print(check_result(".\\data\\test-results.txt" , 'OR_Coos_2008-04-07__08003475.txt' , 'L'))
