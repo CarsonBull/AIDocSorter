@@ -618,71 +618,41 @@ def check_result(file_path , file_name , result):
 
 
         
-
+# IMPORTANT 
+#call function like so: python3 parser.py ./data/DT ./data/DR ./data/L ./data/TEST
 def main():
 
-    #nltk.download()
-    
-    #bayes("./data/TEST/OR_Deschutes_2008-06-03__2008-023914.txt",bag)
-    #intelli_grep1("./data/TEST/OR_Coos_2008-04-04__08003341.txt")
-    #intelli_grep2("./data/TEST/OR_Coos_2008-04-04__08003341.txt")
-    """path="./data/TEST/"
-    file_list = os.listdir(path)
-    count=0
-    if (len(sys.argv) ==2): 
-        if(sys.argv[1]=="a"):  #currently guesses 104 files correctly of 225. 46.22%
-            for x in file_list:
-                results=intelli_grep1(path+x)
-                if(check_result("./data/test-results.txt",results[0],results[1])):
-                    count+=1
-
-
-        if(sys.argv[1]=="b"):  #guesses 149 files correctly of 225. 66.22% 
-            for x in file_list:
-                results=intelli_grep2(path+x)
-                if(check_result("./data/test-results.txt",results[0],results[1])):
-                    count+=1
-
-
-        if(sys.argv[1]=="c"):  #guesses 194 files correctly of 225. 86.22% 
-            dirs = [('.//data//DR' , "DR") , ('.//data//DT' , "DT") , ('.//data//L' , "L")]
-            bag = create_bag(dirs , 0)
-            for x in file_list:
-                results=bayes(path+x,bag)
-                if(check_result("./data/test-results.txt",results[0],results[1])):
-                    count+=1
-
-        if(sys.argv[1]=="d"):  #guesses  files correctly of 225. 
-            dirs = [('.//data//DR' , "DR") , ('.//data//DT' , "DT") , ('.//data//L' , "L")]
-            bag = create_bag(dirs , 0)
-            for x in file_list:
-                results=bayes1(path+x,bag)
-                if(check_result("./data/test-results.txt",results[0],results[1])):
-                    count+=1
-
-
-        
-
+    if (len(sys.argv) ==5): 
+        path=sys.argv[4]
+        dirs = [(sys.argv[1] , "DR") , (sys.argv[2] , "DT") , (sys.argv[3] , "L")]
+        bag = create_bag(dirs , 0)
+        file_list = os.listdir(path)
+        for x in file_list:
+            print(intelli_grep1(path+'/'+x))
+            print(intelli_grep2(path+'/'+x))
+            print(bayes1(path+'/'+x,bag))
+            print(bayes(path+'/'+x,bag))
+            
+          
 
     else:
         print()
-        print("Pass exactly 1 argument with program to select classifier method.") 
+        print("Pass exactly 4 arguments with program to specify document directories in this fashion.") 
         print()        
-        print("a-intelligrep, b-modified intelligrep, c-naive bayes, -d binary bayes")
-        print()"""
+        print("parser.py path/to/trainingdr path/to/tainingdt path/to/trainingl path/to/testdocuments")
+        print()
+        return()
+
     
-##    bayes("./data/TEST/WA_Grant_2009-01-07__1248514.txt",bag)
-##    intelli_grep("./data/TEST/OR_Lincoln_2008-04-02__08004083.txt")
-
-##    j = 0
 
 
-    per = Per()
 
-    per.train()
+#    per = Per()
+
+#    per.train()
 
 #    per.perceptron("./data/TEST/WA_Benton_2009-04-03__2009-008875.txt")
-    per.perceptron("./data/TEST/OR_Lincoln_2008-04-07__08004274.txt")
+#    per.perceptron("./data/TEST/OR_Lincoln_2008-04-07__08004274.txt")
 
 
 ##    print(check_result(".\\data\\test-results.txt" , 'OR_Coos_2008-04-07__08003475.txt' , 'L'))
