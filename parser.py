@@ -698,7 +698,7 @@ def main():
 
             per = Per(dirs)
             per.train()
-            results = per.test_folder(path)
+            results = per.test_folder(path+'/')
 
             for result in results:
                 out_file.write('Preceptron,'+result[0]+','+result[1])
