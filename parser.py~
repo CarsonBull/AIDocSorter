@@ -618,7 +618,8 @@ def check_result(file_path , file_name , result):
 
 
         
-
+# IMPORTANT 
+#call function like so: python3 parser.py ./data/DT ./data/DR ./data/L ./data/TEST
 def main():
 
     if (len(sys.argv) ==5): 
@@ -627,10 +628,21 @@ def main():
         bag = create_bag(dirs , 0)
         file_list = os.listdir(path)
         for x in file_list:
-            print(intelli_grep1(path+'/'+x))
-            print(intelli_grep2(path+'/'+x))
-            print(bayes1(path+'/'+x,bag))
-            print(bayes(path+'/'+x,bag))
+            result=intelli_grep1(path+'/'+x)
+            print('A,'+result[0]+','+result[1])
+
+        for x in file_list:
+            result=intelli_grep2(path+'/'+x)
+            print('B,'+result[0]+','+result[1])
+
+        for x in file_list:
+            result=bayes1(path+'/'+x,bag)
+            print('C,'+result[0]+','+result[1])
+
+        for x in file_list:            
+            result=bayes(path+'/'+x,bag)
+            print('D,'+result[0]+','+result[1])
+
             
           
 

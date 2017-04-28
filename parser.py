@@ -350,12 +350,12 @@ def intelli_grep1(file_path):  #original intelligrep function
             time-=1
 
     #print("DT: "+ str(dtcount)+" DR: "+str(drcount)+" L: "+str(lcount)) #word counts for each class
-    if(lcount>drcount):
-        if(lcount>dtcount):
+    if(lcount>=drcount):
+        if(lcount>=dtcount):
             #print(filename[len(filename)-1]+": L")
             return((filename[len(filename)-1],"L"))
-    if(dtcount>drcount):
-        if(dtcount>lcount):
+    if(dtcount>=drcount):
+        if(dtcount>=lcount):
             #print(filename[len(filename)-1]+": DT")
             return((filename[len(filename)-1],"DT"))
     if(drcount>=dtcount):
@@ -403,12 +403,12 @@ def intelli_grep2(file_path): #modified intelligrep with pattern matching and we
             time-=1
 
     #print("DT: "+ str(dtcount)+" DR: "+str(drcount)+" L: "+str(lcount)) #word counts for each class
-    if(lcount/2>5*drcount):
-        if(lcount/2>dtcount):
+    if(lcount/2>=5*drcount):
+        if(lcount/2>=dtcount):
             #print(filename[len(filename)-1]+": L")
             return((filename[len(filename)-1],"L"))
-    if(dtcount>5*drcount):
-        if(dtcount>lcount/2):
+    if(dtcount>=5*drcount):
+        if(dtcount>=lcount/2):
             #print(filename[len(filename)-1]+": DT")
             return((filename[len(filename)-1],"DT"))
     if(5*drcount>=dtcount):
@@ -628,10 +628,21 @@ def main():
         bag = create_bag(dirs , 0)
         file_list = os.listdir(path)
         for x in file_list:
-            print(intelli_grep1(path+'/'+x))
-            print(intelli_grep2(path+'/'+x))
-            print(bayes1(path+'/'+x,bag))
-            print(bayes(path+'/'+x,bag))
+            result=intelli_grep1(path+'/'+x)
+            print('A,'+result[0]+','+result[1])
+
+        for x in file_list:
+            result=intelli_grep2(path+'/'+x)
+            print('B,'+result[0]+','+result[1])
+
+        for x in file_list:
+            result=bayes1(path+'/'+x,bag)
+            print('C,'+result[0]+','+result[1])
+
+        for x in file_list:            
+            result=bayes(path+'/'+x,bag)
+            print('D,'+result[0]+','+result[1])
+
             
           
 
