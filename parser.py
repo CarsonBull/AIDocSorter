@@ -428,8 +428,7 @@ def make_dict(bag):
         
 class Per:
 
-    def __init__(self):
-        dirs = [('.//data//DR' , "DR") , ('.//data//DT' , "DT") , ('.//data//L' , "L")]
+    def __init__(self , dirs):
         self.bag = create_bag(dirs , 0)
 
         self.DT_dict = {}
@@ -595,9 +594,48 @@ class Per:
                 L_score += self.L_ratio[word]*file_words[word]
                 #print("L HIT: " + word + ".." + str(L_score))
 
-        print("DT_score: " + str(DT_score))
-        print("DR_score: " + str(DR_score))
-        print("L_score: " + str(L_score))
+        return ( DT_score , DR_score , L_score )
+
+    def test_file(self , file_path):
+        result = self.perceptron(file_path)
+        guess = self.get_win(result)
+
+##        print(file_path + ": " + str(result) + " , " + str(guess))
+
+        return guess
+
+    def test_folder(self , folder_path):
+
+        result_list = [] 
+
+        file_list = os.listdir(folder_path)
+        for file in file_list:
+            guess  = self.test_file(folder_path + file)
+            result_list.append((file , guess))
+
+        return result_list
+
+    def get_win(self , result_tuple):
+
+        max_val = 0
+        max_pos = 0
+        i = 0
+
+        if result_tuple[2] > 40:
+            return "L"
+
+        for guess in result_tuple:
+            if guess > max_val:
+                max_pos = i
+                max_val = guess
+            i+=1
+
+        if max_pos == 0:
+            return "DT"
+        elif max_pos == 1:
+            return "DR"
+        else:
+            return "L"
 
         
         
@@ -640,22 +678,30 @@ def main():
 
             for x in file_list:
                 result=intelli_grep1(path+'/'+x)
-                out_file.write('A,'+result[0]+','+result[1])
+                out_file.write('IG 1,'+result[0]+','+result[1])
                 out_file.write('\n')
     
             for x in file_list:
                 result=intelli_grep2(path+'/'+x)
-                out_file.write('B,'+result[0]+','+result[1])
+                out_file.write('IG 2,'+result[0]+','+result[1])
                 out_file.write('\n')
 
             for x in file_list:
                 result=bayes1(path+'/'+x,bag)
-                out_file.write('C,'+result[0]+','+result[1])
+                out_file.write('Bayes 2,'+result[0]+','+result[1])
                 out_file.write('\n')
 
             for x in file_list:            
                 result=bayes(path+'/'+x,bag)
-                out_file.write('D,'+result[0]+','+result[1])
+                out_file.write('Bayes 1,'+result[0]+','+result[1])
+                out_file.write('\n')
+
+            per = Per(dirs)
+            per.train()
+            results = per.test_folder(path)
+
+            for result in results:
+                out_file.write('Preceptron,'+result[0]+','+result[1])
                 out_file.write('\n')
 
             
