@@ -624,7 +624,13 @@ def main():
 
     if (len(sys.argv) ==5): 
         path=sys.argv[4]
-        dirs = [(sys.argv[1] , "DR") , (sys.argv[2] , "DT") , (sys.argv[3] , "L")]
+    
+        class1=sys.argv[1].split('/')
+        class2=sys.argv[2].split('/')
+        class3=sys.argv[3].split('/')
+    
+
+        dirs = [(sys.argv[1] , class1[len(class1)-1]) , (sys.argv[2] , class2[len(class2)-1]) , (sys.argv[3] , class3[len(class3)-1])]
         bag = create_bag(dirs , 0)
         file_list = os.listdir(path)
         for x in file_list:

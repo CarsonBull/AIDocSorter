@@ -350,12 +350,12 @@ def intelli_grep1(file_path):  #original intelligrep function
             time-=1
 
     #print("DT: "+ str(dtcount)+" DR: "+str(drcount)+" L: "+str(lcount)) #word counts for each class
-    if(lcount>drcount):
-        if(lcount>dtcount):
+    if(lcount>=drcount):
+        if(lcount>=dtcount):
             #print(filename[len(filename)-1]+": L")
             return((filename[len(filename)-1],"L"))
-    if(dtcount>drcount):
-        if(dtcount>lcount):
+    if(dtcount>=drcount):
+        if(dtcount>=lcount):
             #print(filename[len(filename)-1]+": DT")
             return((filename[len(filename)-1],"DT"))
     if(drcount>=dtcount):
@@ -403,12 +403,12 @@ def intelli_grep2(file_path): #modified intelligrep with pattern matching and we
             time-=1
 
     #print("DT: "+ str(dtcount)+" DR: "+str(drcount)+" L: "+str(lcount)) #word counts for each class
-    if(lcount/2>5*drcount):
-        if(lcount/2>dtcount):
+    if(lcount/2>=5*drcount):
+        if(lcount/2>=dtcount):
             #print(filename[len(filename)-1]+": L")
             return((filename[len(filename)-1],"L"))
-    if(dtcount>5*drcount):
-        if(dtcount>lcount/2):
+    if(dtcount>=5*drcount):
+        if(dtcount>=lcount/2):
             #print(filename[len(filename)-1]+": DT")
             return((filename[len(filename)-1],"DT"))
     if(5*drcount>=dtcount):
@@ -624,7 +624,16 @@ def main():
 
     if (len(sys.argv) ==5): 
         path=sys.argv[4]
-        dirs = [(sys.argv[1] , "DR") , (sys.argv[2] , "DT") , (sys.argv[3] , "L")]
+    
+        class1=sys.argv[1].split('/')
+        class2=sys.argv[2].split('/')
+        class3=sys.argv[3].split('/')
+    
+        
+        
+        
+
+        dirs = [(sys.argv[1] , class1[len(class1)-1]) , (sys.argv[2] , class2[len(class2)-1]) , (sys.argv[3] , class3[len(class3)-1])]
         bag = create_bag(dirs , 0)
         file_list = os.listdir(path)
         for x in file_list:
