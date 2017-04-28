@@ -102,7 +102,7 @@ def words_no_stopwords(data):
             word = word + x
         else:
             # Checks if we have a word with only alphabetic characters or if it is a nonword. then adds it to the respective list
-            if not nonword and word != "" and word not in stops:
+            if not nonword and word != "" and word not in stops and len(word) > 2:
                 alpha_words.append(word)
             elif word != "":
                 other_words.append(word)
@@ -178,6 +178,9 @@ def word_frequencies_file(file_name):
     """ May not end up using this. The idea is to make it with a file path and not a folder."""
 
     lookup_dict = {}
+
+
+    
 
     alphabetic_words_list = words_no_stopwords(file_name)[0]
     for word in alphabetic_words_list:
@@ -481,7 +484,7 @@ class Per:
         for word in self.DR_dict:
             self.DR_ratio[word] = self.DR_dict[word]/self.DR_count
 
-        print(self.L_count)
+        #print(self.L_count)
 
         for word in self.L_dict:
             self.L_ratio[word] = self.L_dict[word]/self.L_count
@@ -510,47 +513,49 @@ class Per:
 
             if doc[1] == "DR":
                 if DR_score >= 0:
-                    DR_error = 0
+                    DR_error = 1
                 else:
                     DR_error = -1
             else:
                 if DR_score >= 0:
                     DR_error = -1
                 else:
-                    DR_error = 0
+                    DR_error = 1
 
             if doc[1] == "DT":
                 if DT_score >= 0:
-                    DT_error = 0
+                    DT_error = 1
                 else:
                     DT_error = -1
             else:
                 if DT_score >= 0:
                     DT_error = -1
                 else:
-                    DT_error = 0
+                    DT_error = 1
 
             if doc[1] == "L":
                 if L_score >= 0:
-                    L_error = 0
+                    L_error = 1
                 else:
                     L_error = -1
             else:
                 if L_score >= 0:
                     L_error = -1
                 else:
-                    L_error = 0
+                    L_error = 1
+
+            self.DT_bias = self.DT_bias + (self.alpha*DT_error)
+            self.DR_bias = self.DR_bias + (self.alpha*DR_error)
+            self.L_bias = self.L_bias + (self.alpha*L_error)
 
             for word in doc[0]:
                 if word in self.DT_ratio:
                     self.DT_ratio[word] = self.DT_ratio[word] + (self.alpha*DT_error)
-                    self.DT_bias = self.DT_bias + (self.alpha*DT_error)
                 if word in self.DR_ratio:
                     self.DR_ratio[word] = self.DR_ratio[word] + (self.alpha*DR_error)
-                    self.DR_bias = self.DR_bias + (self.alpha*DR_error)
                 if word in self.L_ratio:
                     self.L_ratio[word] = self.L_ratio[word] + (self.alpha*L_error)
-                    self.L_bias = self.L_bias + (self.alpha*L_error)
+                    
 
             self.alpha = self.alpha * self.decay
                    
@@ -559,19 +564,36 @@ class Per:
     def perceptron(self , file_path):
 
         #   open and preprocess file for testing
-        file_words = word_frequencies_file(file_path)
+        with open(file_path, encoding = 'utf8') as file:
+            data = file.read()
+
+        myfile=words_no_stopwords(data)
+
+        file_words = {}
+        
+        for word in myfile[0]:
+            if word in file_words:
+                file_words[word] += 1
+            else:
+                file_words[word] = 1
+
 
         DT_score = self.DT_bias;
         DR_score = self.DR_bias;
         L_score = self.L_bias;
+
+        
         for word in file_words:
-            print(type(file_words[0]))
+            
             if word in self.DT_ratio:
                 DT_score += self.DT_ratio[word]*file_words[word]
+                #print("DT HIT: " + word + ".." + str(DT_score))
             if word in self.DR_ratio:
                 DR_score += self.DR_ratio[word]*file_words[word]
+                #print("DR HIT: " + word + ".." + str(DR_score))
             if word in self.L_ratio:
                 L_score += self.L_ratio[word]*file_words[word]
+                #print("L HIT: " + word + ".." + str(L_score))
 
         print("DT_score: " + str(DT_score))
         print("DR_score: " + str(DR_score))
@@ -604,7 +626,7 @@ def main():
     #bayes("./data/TEST/OR_Deschutes_2008-06-03__2008-023914.txt",bag)
     #intelli_grep1("./data/TEST/OR_Coos_2008-04-04__08003341.txt")
     #intelli_grep2("./data/TEST/OR_Coos_2008-04-04__08003341.txt")
-    path="./data/TEST/"
+    """path="./data/TEST/"
     file_list = os.listdir(path)
     count=0
     if (len(sys.argv) ==2): 
@@ -647,7 +669,7 @@ def main():
         print("Pass exactly 1 argument with program to select classifier method.") 
         print()        
         print("a-intelligrep, b-modified intelligrep, c-naive bayes, -d binary bayes")
-        print()
+        print()"""
     
 ##    bayes("./data/TEST/WA_Grant_2009-01-07__1248514.txt",bag)
 ##    intelli_grep("./data/TEST/OR_Lincoln_2008-04-02__08004083.txt")
@@ -655,11 +677,12 @@ def main():
 ##    j = 0
 
 
-#    per = Per()
+    per = Per()
 
-#    per.train()
+    per.train()
 
-#    per.perceptron("./data/TEST/WA_Benton_2009-04-02__2009-008784.txt")
+#    per.perceptron("./data/TEST/WA_Benton_2009-04-03__2009-008875.txt")
+    per.perceptron("./data/TEST/OR_Lincoln_2008-04-07__08004274.txt")
 
 
 ##    print(check_result(".\\data\\test-results.txt" , 'OR_Coos_2008-04-07__08003475.txt' , 'L'))
